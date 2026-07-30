@@ -1,0 +1,184 @@
+import { useState, useEffect } from 'react';
+import SparkleBackground from './components/SparkleBackground';
+import Envelope from './components/Envelope';
+import FriendshipMessage from './components/FriendshipMessage';
+import Confetti from './components/Confetti';
+
+export default function App() {
+  const [showMessage, setShowMessage] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 300);
+  }, []);
+
+  const handleEnvelopeOpen = () => {
+    setShowConfetti(true);
+    setTimeout(() => setShowMessage(true), 400);
+  };
+
+  const handleReset = () => {
+    setShowMessage(false);
+    setShowConfetti(false);
+  };
+
+  return (
+    <div
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #1a1028 0%, #2d1b4e 25%, #1e3a5f 50%, #1a1028 75%, #2d1b4e 100%)',
+      }}
+    >
+      {/* Background Image Overlay - Golden bokeh */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `url('https://images.pexels.com/photos/8080577/pexels-photo-8080577.jpeg?auto=compress&cs=tinysrgb&w=1920')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.25,
+        }}
+      />
+      {/* Secondary golden shimmer overlay */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `url('https://images.pexels.com/photos/6789778/pexels-photo-6789778.jpeg?auto=compress&cs=tinysrgb&w=1920')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.1,
+          mixBlendMode: 'screen',
+        }}
+      />
+
+      {/* Gradient overlays */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(100, 50, 150, 0.3) 0%, transparent 70%)',
+        }}
+      />
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: 'radial-gradient(ellipse at top right, rgba(255, 200, 100, 0.1) 0%, transparent 50%)',
+        }}
+      />
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: 'radial-gradient(ellipse at bottom left, rgba(255, 100, 150, 0.08) 0%, transparent 50%)',
+        }}
+      />
+
+      {/* Sparkle particles */}
+      <SparkleBackground />
+
+      {/* Confetti */}
+      {showConfetti && <Confetti />}
+
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-8 gap-6">
+        {/* Header */}
+        <div
+          className={`text-center transition-all duration-1000 ${
+            mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          {/* Decorative top emojis */}
+          <div className="flex justify-center gap-3 mb-4 text-2xl md:text-3xl">
+            <span className="inline-block" style={{ animation: 'twinkle 2s ease-in-out 0s infinite' }}>✨</span>
+            <span className="inline-block" style={{ animation: 'twinkle 2s ease-in-out 0.3s infinite' }}>🌟</span>
+            <span className="inline-block" style={{ animation: 'twinkle 2s ease-in-out 0.6s infinite' }}>✨</span>
+          </div>
+
+          <h1
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-2 shimmer-text"
+            style={{ fontFamily: "'Dancing Script', cursive" }}
+          >
+            Happy Friendship Day
+          </h1>
+
+          <p
+            className="text-white/60 text-sm md:text-base font-light tracking-widest uppercase mt-2"
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            Celebrating the bonds that matter most
+          </p>
+          
+          {/* Decorative top emojis */}
+          <div className="flex justify-center gap-3 mb-4 text-2xl md:text-3xl">
+            <span className="inline-block" style={{ animation: 'twinkle 2s ease-in-out 0s infinite' }}>✨</span>
+            <span className="inline-block" style={{ animation: 'twinkle 2s ease-in-out 0.3s infinite' }}>🌟</span>
+            <span className="inline-block" style={{ animation: 'twinkle 2s ease-in-out 0.6s infinite' }}>✨</span>
+          </div>
+
+          <h1
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-2 shimmer-text"
+            style={{ fontFamily: "'Dancing Script', cursive" }}
+          >
+            Happy Friendship Day
+          </h1>
+
+          <p
+            className="text-white/60 text-sm md:text-base font-light tracking-widest uppercase mt-2"
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            Celebrating the bonds that matter most
+          </p>
+
+          {/* Decorative line */}
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <div className="h-px w-12 md:w-24 bg-gradient-to-r from-transparent to-yellow-400/40" />
+            <span className="text-yellow-400/60 text-xs">💛</span>
+            <div className="h-px w-12 md:w-24 bg-gradient-to-l from-transparent to-yellow-400/40" />
+          </div>
+        </div>
+
+        {/* Envelope or Message */}
+        <div
+          className={`transition-all duration-1000 delay-300 ${
+            mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+          }`}
+        >
+          {!showMessage ? (
+            <Envelope onOpen={handleEnvelopeOpen} />
+          ) : (
+            <div className="flex flex-col items-center gap-6 w-full">
+              <FriendshipMessage />
+
+              {/* Reset button */}
+              <button
+                onClick={handleReset}
+                className="mt-4 px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: 'rgba(255,255,255,0.7)',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                }}
+              >
+                🔄 Open Another Envelope
+              </button>
+            </div>
+          )}
+        </div>
+
+
+
+        {/* Footer */}
+        <div
+          className={`mt-8 text-center transition-all duration-1000 delay-700 ${
+            mounted ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <p className="text-white/30 text-xs tracking-widest uppercase">
+            Made with 💛 for Friendship Day
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
