@@ -2,15 +2,410 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Happy Friendship Day 💛</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400&family=Sacramento&display=swap" rel="stylesheet">
   <style>
-    /* Paste the full CSS + HTML + JS from the friendship-day.html file here */
-    /* (Copy the complete code I gave you earlier in public/friendship-day.html) */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #fffbeb 0%, #fefce8 50%, #fff7ed 100%);
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Dot pattern background */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, #f59e0b 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    /* ── FLOATING EMOJIS ── */
+    .floaters {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .floater {
+      position: absolute;
+      bottom: -40px;
+      animation: floatUp linear infinite;
+      opacity: 0;
+      user-select: none;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg);     opacity: 0; }
+      10%  { opacity: 0.75; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-110vh) rotate(30deg); opacity: 0; }
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      z-index: 10;
+      position: relative;
+    }
+    .header .date {
+      color: #f59e0b;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .header h1 {
+      font-size: clamp(36px, 7vw, 60px);
+      font-weight: 800;
+      color: #92400e;
+      line-height: 1.15;
+    }
+    .header h1 span { color: #f59e0b; }
+    .header p {
+      margin-top: 10px;
+      color: #d97706;
+      font-size: 18px;
+    }
+
+    /* ── ENVELOPE ── */
+    .envelope-wrap {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .envelope {
+      width: 280px;
+      height: 200px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      filter: drop-shadow(0 10px 30px rgba(245,158,11,0.35));
+    }
+    .envelope:hover { transform: scale(1.05) translateY(-4px); }
+    .envelope.opened {
+      transform: scale(0.88);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    /* Body */
+    .env-body {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+      overflow: hidden;
+    }
+    /* Left triangle */
+    .env-body::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      border-bottom: 200px solid #f59e0b;
+      border-right: 140px solid transparent;
+      opacity: 0.5;
+    }
+    /* Right triangle */
+    .env-body::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      border-bottom: 200px solid #d97706;
+      border-left: 140px solid transparent;
+      opacity: 0.5;
+    }
+
+    /* Seal emoji */
+    .env-seal {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      z-index: 2;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .envelope.opened .env-seal {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+
+    /* Lid (top flap) */
+    .env-lid {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 5;
+      transform-origin: top center;
+      transition: transform 0.7s ease;
+      width: 0;
+      height: 0;
+      border-top: 100px solid #fbbf24;
+      border-left: 140px solid transparent;
+      border-right: 140px solid transparent;
+      margin: 0 auto;
+    }
+    .envelope.opened .env-lid {
+      transform: rotateX(-180deg);
+    }
+
+    /* Open button */
+    .open-btn {
+      padding: 13px 36px;
+      background: #fbbf24;
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(251,191,36,0.45);
+      transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+    }
+    .open-btn:hover {
+      background: #f59e0b;
+      box-shadow: 0 12px 32px rgba(245,158,11,0.5);
+      transform: translateY(-2px);
+    }
+    .open-btn.hidden { display: none; }
+
+    /* ── LETTER MODAL ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(120,80,0,0.22);
+      backdrop-filter: blur(7px);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .overlay.show { display: flex; }
+
+    .letter {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 440px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(120,80,0,0.2);
+      animation: letterIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes letterIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.9); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);   }
+    }
+
+    .letter-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .letter-divider hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid #fcd34d;
+    }
+    .letter-divider span { font-size: 22px; }
+
+    .letter h2 {
+      text-align: center;
+      color: #b45309;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .letter .subtitle {
+      text-align: center;
+      color: #fbbf24;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .letter-body {
+      color: #92400e;
+      font-size: 15px;
+      line-height: 1.8;
+      font-family: Georgia, serif;
+    }
+    .letter-body p + p { margin-top: 14px; }
+
+    .letter-sig {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 28px;
+    }
+    .letter-sig .sig-text {
+      color: #d97706;
+      font-size: 13px;
+    }
+    .letter-sig .heart { font-size: 46px; line-height: 1; }
+
+    .letter-divider-bottom {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .letter-divider-bottom hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid #fcd34d;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #fef3c7;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 700;
+      color: #d97706;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .close-btn:hover { background: #fde68a; color: #92400e; }
+
+    /* ── FOOTER ── */
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      color: #fbbf24;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
-  <!-- Full body content from friendship-day.html -->
+
+  <!-- Floating emojis -->
+  <div class="floaters" id="floaters"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <p class="date">August 3, 2026</p>
+    <h1>Happy <span>Friendship</span> Day</h1>
+    <p>You've got a special message 💛</p>
+  </div>
+
+  <!-- Envelope -->
+  <div class="envelope-wrap">
+    <div class="envelope" id="envelope" onclick="openEnvelope()" title="Click to open">
+      <div class="env-body">
+        <div class="env-seal">💌</div>
+      </div>
+      <div class="env-lid"></div>
+    </div>
+
+    <button class="open-btn" id="openBtn" onclick="openEnvelope()">
+      Open Your Letter ✉️
+    </button>
+  </div>
+
+  <!-- Letter Modal -->
+  <div class="overlay" id="overlay">
+    <div class="letter">
+      <button class="close-btn" onclick="closeLetter()">×</button>
+
+      <div class="letter-divider">
+        <hr/><span>🌻</span><hr/>
+      </div>
+
+      <h2>To My Dear Friend,</h2>
+      <p class="subtitle">Happy Friendship Day 💛</p>
+
+      <div class="letter-body">
+        <p>In the garden of life, you are my favourite flower — always blooming, always bright, always there.</p>
+        <p>Thank you for the laughter that echoes in memories, the silences that needed no words, and the warmth that only a true friend can give.</p>
+        <p>No matter where the road leads, I'm grateful our paths crossed. Here's to every chapter we've shared and every adventure yet to come.</p>
+      </div>
+
+      <div class="letter-sig">
+        <p class="sig-text">With love &amp; gratitude,</p>
+        <span class="heart">💛</span>
+      </div>
+
+      <div class="letter-divider-bottom">
+        <hr/><span>✨</span><hr/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <p class="footer">Friends Forever 🌻</p>
+
+  <script>
+    // ── Floating emojis ──
+    const EMOJIS = ["💛","🌻","✨","💫","🤍","🌼","💌","🎀"];
+    const container = document.getElementById("floaters");
+    for (let i = 0; i < 18; i++) {
+      const el = document.createElement("span");
+      el.className = "floater";
+      el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      el.style.left             = Math.random() * 98 + "%";
+      el.style.fontSize         = (Math.random() * 14 + 13) + "px";
+      el.style.animationDuration = (Math.random() * 10 + 8) + "s";
+      el.style.animationDelay   = (Math.random() * 12) + "s";
+      container.appendChild(el);
+    }
+
+    // ── Envelope open ──
+    let isOpen = false;
+    function openEnvelope() {
+      if (isOpen) return;
+      isOpen = true;
+      document.getElementById("envelope").classList.add("opened");
+      document.getElementById("openBtn").classList.add("hidden");
+      setTimeout(() => {
+        document.getElementById("overlay").classList.add("show");
+      }, 850);
+    }
+
+    // ── Close letter ──
+    function closeLetter() {
+      document.getElementById("overlay").classList.remove("show");
+      setTimeout(() => {
+        document.getElementById("envelope").classList.remove("opened");
+        isOpen = false;
+        document.getElementById("openBtn").classList.remove("hidden");
+      }, 300);
+    }
+
+    // Close on backdrop click
+    document.getElementById("overlay").addEventListener("click", function(e) {
+      if (e.target === this) closeLetter();
+    });
+  </script>
 </body>
-</html>
+      </html>
